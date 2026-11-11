@@ -1,6 +1,6 @@
 # Template de API RESTful (FastAPI + SQLite) - Monolito (Projeto A3)
 
-> 💡 **AVISO IMPORTANTE:** Este repositório contém a estrutura base desenvolvida para o **Projeto A3** em formato **monolítico**. Todo o ciclo de vida da aplicação — conexão com o banco, estruturação de dados e roteamento — está concentrado em um único arquivo (`main.py`). Ao final deste documento, há um guia prático de como evoluir esta base para o **Projeto A4**, adotando uma arquitetura em múltiplas camadas.
+> 💡 **AVISO IMPORTANTE:** Este repositório contém a estrutura base desenvolvida para o **Projeto A3**. O código está sendo organizado em múltiplas camadas como preparação para o **Projeto A4**.
 
 Esta é uma API educacional desenvolvida em Python com o framework **FastAPI** e banco de dados relacional **SQLite**. Ela atende aos requisitos iniciais de persistência de dados e documentação automática, servindo como backend para integração com a UC de Usabilidade.
 
@@ -61,22 +61,21 @@ Manter todo o código em um único arquivo (`main.py`) é excelente para o apren
 Para o **Projeto A4**, o grupo deverá refatorar este monolito em uma **arquitetura de múltiplas camadas**. Siga estes passos para organizar a casa:
 
 1. **Isole o Banco de Dados (`database.py`)**
-   * Crie um novo arquivo chamado `database.py`.
-   * Mova para ele toda a lógica de conexão com o SQLite (a criação da `engine`, do `cursor` ou a configuração do ORM que estiverem usando) e a função que cria as tabelas iniciais.
+   * A conexão SQLite (`conectar_banco`) e a criação da tabela inicial (`criar_tabelas`) ficam em `database.py`.
+   * `main.py` importa essas funções e inicializa o banco durante o startup da API.
    * *Analogia:* Este será o almoxarifado exclusivo do seu sistema.
 
 2. **Separe os Contratos de Dados (`models.py`)**
-   * Crie um arquivo `models.py`.
-   * Recorte do seu `main.py` todas as classes que herdam de `BaseModel` do Pydantic (como `RegistroCreate`, `RegistroResponse`, etc.) e cole neste novo arquivo.
+   * As classes Pydantic (`RegistroCreate` e `RegistroResponse`) ficam em `models.py`.
+   * `main.py` importa os modelos para validar os dados das rotas.
    * *Analogia:* Este arquivo será o setor de controle de qualidade, ditando o que pode entrar ou sair do sistema.
 
 3. **Limpe as Rotas (`main.py`)**
-   * O seu `main.py` agora deve ficar muito mais limpo.
-   * Mantenha apenas a inicialização do FastAPI (`app = FastAPI()`) e as funções de rota (os `@app.get`, `@app.post`, etc.).
-   * No topo do `main.py`, importe os módulos que você acabou de criar:
+   * O seu `main.py` agora fica mais limpo, com a inicialização do FastAPI e as funções de rota (`@app.get`, `@app.post`, etc.).
+   * No topo do `main.py`, importe os módulos separados:
      ```python
-     from database import conectar_banco, criar_tabelas
-     from models import RegistroCreate, RegistroResponse
+   from database import conectar_banco, criar_tabelas
+   from models import RegistroCreate, RegistroResponse
      ```
 
 Após essa divisão, seu código estará preparado para escalar, integrando facilmente novas funcionalidades de segurança, como um proxy reverso Nginx, de forma totalmente estruturada e profissional.
